@@ -1,0 +1,42 @@
+version: '2'
+services:
+  db:
+    image: postgres:9.5-alpine
+    environment:
+      - POSTGRES_USER=suzaku
+      - POSTGRES_PASSWORD=suzaku
+    restart: always
+    ports:
+      - 5432:5432
+  nginx:
+    image: nginx:alpine
+    restart: always
+    volumes:
+      - ./conf/nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./conf/nginx/params:/etc/nginx/params
+      - ./conf/nginx/sites-enabled:/etc/nginx/sites-enabled
+    ports:
+      - 80:80
+  app:
+    image: lucky2you/suzaku-install:suzaku
+    build: src/suzaku-install-script
+    volumes:
+      - ./src/suzaku-app:/mnt/odoo-source
+      - ./src/suzaku-addons:/mnt/addons/suzaku/addons
+      - ./src/suzaku-saas-tools:/mnt/addons/suzaku/saas_tools
+    environment:
+      - RESET_ADMIN_PASSWORDS_ON_STARTUP=yes
+      - ODOO_MASTER_PASS=admin
+      - DB_PORT_5432_TCP_ADDR=db
+      - DB_ENV_POSTGRES_USER=suzaku
+      - DB_ENV_POSTGRES_PASSWORD=suzaku
+    ports:
+      - 8069:8069
+      - 8072:8072
+    depends_on:
+      - db
+      - nginx
+    links:
+      - db
+      - nginx
+    restart: always
