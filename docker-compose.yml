@@ -25,7 +25,6 @@ services:
       - ./src/suzaku-addons:/mnt/addons/suzaku/addons
       - ./src/suzaku-saas-tools:/mnt/addons/suzaku/saas_tools
     environment:
-      - RESET_ADMIN_PASSWORDS_ON_STARTUP=yes
       - ODOO_MASTER_PASS=admin
       - DB_PORT_5432_TCP_ADDR=db
       - DB_ENV_POSTGRES_USER=suzaku
